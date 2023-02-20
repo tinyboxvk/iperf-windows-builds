@@ -1,0 +1,34 @@
+name: Build with Cygwin
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - run: git config --global core.autocrlf input
+    - name: Install Cygwin Action
+      uses: cygwin/cygwin-install-action@v3
+      with:
+        packages: make cmake gcc-core gcc-g++ binutils cygwin-devel w32api-headers w32api-runtime
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: configure
+      run: ./configure
+      shell: bash
+    - name: make
+      run: make
+    - name: make install
+      run: make install
+    - uses: actions/upload-artifact@v3
+      with:
+        name: iperf3
+        path: C:/cygwin/usr/local/bin/iperf3.exe
+    - uses: actions/upload-artifact@v3
+      with:
+        name: iperf3
+        path: C:/cygwin/bin/cygwin1.dll
