@@ -24,9 +24,11 @@ jobs:
       run: make
     - name: make install
       run: make install
+    - name: copy
+      run: copy C:/cygwin/bin/cygwin1.dll C:/cygwin/usr/local/bin/
     - uses: actions/upload-artifact@v4
       with:
         name: iperf3
         path: |
           C:/cygwin/usr/local/bin/iperf3.exe
-          C:/cygwin/bin/cygwin1.dll
+          C:/cygwin/usr/local/bin/cygwin1.dll
