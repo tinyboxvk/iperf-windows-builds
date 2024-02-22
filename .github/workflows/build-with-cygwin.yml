@@ -27,8 +27,6 @@ jobs:
     - uses: actions/upload-artifact@v4
       with:
         name: iperf3
-        path: C:/cygwin/usr/local/bin/iperf3.exe
-    - uses: actions/upload-artifact@v4
-      with:
-        name: iperf3
-        path: C:/cygwin/bin/cygwin1.dll
+        path: |
+          C:/cygwin/usr/local/bin/iperf3.exe
+          C:/cygwin/bin/cygwin1.dll
