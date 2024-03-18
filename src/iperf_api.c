@@ -1,5 +1,5 @@
 /*
- * iperf, Copyright (c) 2014-2022, The Regents of the University of
+ * iperf, Copyright (c) 2014-2024, The Regents of the University of
  * California, through Lawrence Berkeley National Laboratory (subject
  * to receipt of any required approvals from the U.S. Dept. of
  * Energy).  All rights reserved.
@@ -46,9 +46,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
-#ifdef HAVE_STDINT_H
 #include <stdint.h>
-#endif
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <sys/mman.h>
@@ -3254,6 +3252,7 @@ iperf_reset_test(struct iperf_test *test)
     test->settings->socket_bufsize = 0;
     test->settings->blksize = DEFAULT_TCP_BLKSIZE;
     test->settings->rate = 0;
+    test->settings->fqrate = 0;
     test->settings->burst = 0;
     test->settings->mss = 0;
     test->settings->tos = 0;
