@@ -145,6 +145,7 @@ iperf_tcp_accept(struct iperf_test * test)
 
     if (Nread(s, cookie, COOKIE_SIZE, Ptcp) < 0) {
         i_errno = IERECVCOOKIE;
+        close(s);
         return -1;
     }
 
@@ -310,6 +311,7 @@ iperf_tcp_listen(struct iperf_test *test)
 
         if (listen(s, INT_MAX) < 0) {
             i_errno = IESTREAMLISTEN;
+            close(s);
             return -1;
         }
 
@@ -330,6 +332,7 @@ iperf_tcp_listen(struct iperf_test *test)
     }
     if (test->settings->socket_bufsize && test->settings->socket_bufsize > sndbuf_actual) {
 	i_errno = IESETBUF2;
+    close(s);
 	return -1;
     }
 
@@ -347,6 +350,7 @@ iperf_tcp_listen(struct iperf_test *test)
     }
     if (test->settings->socket_bufsize && test->settings->socket_bufsize > rcvbuf_actual) {
 	i_errno = IESETBUF2;
+    close(s);
 	return -1;
     }
 
