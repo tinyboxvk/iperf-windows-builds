@@ -12,7 +12,7 @@ jobs:
     steps:
     - run: git config --global core.autocrlf input
     - name: Install Cygwin Action
-      uses: cygwin/cygwin-install-action@v5
+      uses: cygwin/cygwin-install-action@v4
       with:
         packages: make cmake gcc-core gcc-g++ binutils cygwin-devel w32api-headers w32api-runtime
     - name: Checkout
