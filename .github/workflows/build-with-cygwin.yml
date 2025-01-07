@@ -19,6 +19,8 @@ jobs:
       run: echo "/usr/bin:$(cygpath C:/Windows)/system32" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8
     - name: Checkout
       uses: actions/checkout@v4
+      with:
+        persist-credentials: false
     - name: configure
       run: ./configure
       shell: bash
