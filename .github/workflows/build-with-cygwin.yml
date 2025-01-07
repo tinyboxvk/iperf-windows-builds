@@ -12,9 +12,11 @@ jobs:
     steps:
     - run: git config --global core.autocrlf input
     - name: Install Cygwin Action
-      uses: cygwin/cygwin-install-action@v4
+      uses: cygwin/cygwin-install-action@v5
       with:
         packages: make cmake gcc-core gcc-g++ binutils cygwin-devel w32api-headers w32api-runtime
+    - name: set cygwin PATH
+      run: echo "/usr/bin:$(cygpath ${SYSTEMROOT})/system32" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8
     - name: Checkout
       uses: actions/checkout@v4
     - name: configure
