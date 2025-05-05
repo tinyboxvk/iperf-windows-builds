@@ -603,25 +603,25 @@ iperf_set_mapped_v4(struct iperf_test *ipt, const int val)
 }
 
 void 
-iperf_set_on_new_stream_callback(struct iperf_test* ipt, void (*callback)())
+iperf_set_on_new_stream_callback(struct iperf_test* ipt, void (*callback)(struct iperf_stream *))
 {
         ipt->on_new_stream = callback;
 }
 
 void 
-iperf_set_on_test_start_callback(struct iperf_test* ipt, void (*callback)())
+iperf_set_on_test_start_callback(struct iperf_test* ipt, void (*callback)(struct iperf_test *))
 {
         ipt->on_test_start = callback;
 }
 
 void 
-iperf_set_on_test_connect_callback(struct iperf_test* ipt, void (*callback)())
+iperf_set_on_test_connect_callback(struct iperf_test* ipt, void (*callback)(struct iperf_test *))
 {
         ipt->on_connect = callback;
 }
 
 void 
-iperf_set_on_test_finish_callback(struct iperf_test* ipt, void (*callback)())
+iperf_set_on_test_finish_callback(struct iperf_test* ipt, void (*callback)(struct iperf_test *))
 {
         ipt->on_test_finish = callback;
 }
@@ -2249,12 +2249,17 @@ iperf_exchange_parameters(struct iperf_test *test)
                 i_errno = IECTRLWRITE;
                 return -1;
             }
+            err = htonl(errno);
+            if (Nwrite(test->ctrl_sck, (char*) &err, sizeof(err), Ptcp) < 0) {
+                i_errno = IECTRLWRITE;
+                return -1;
+            }
             return -1;
         }
 #endif //HAVE_SSL
 
         if ((s = test->protocol->listen(test)) < 0) {
-	        if (iperf_set_send_state(test, SERVER_ERROR) != 0)
+	    if (iperf_set_send_state(test, SERVER_ERROR) != 0)
                 return -1;
             err = htonl(i_errno);
             if (Nwrite(test->ctrl_sck, (char*) &err, sizeof(err), Ptcp) < 0) {
