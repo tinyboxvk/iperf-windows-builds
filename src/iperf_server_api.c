@@ -494,7 +494,7 @@ cleanup_server(struct iperf_test *test)
 
     /* Close open test sockets */
     if (test->ctrl_sck > -1) {
-        // Make sure all control messages (especially error messages) are received by the client before closing socket
+        // Make sure all control messages (especially error messages) are received by the client before the socket is closed
         iperf_sync_close_socket(test->ctrl_sck);
         test->ctrl_sck = -1;
     }
