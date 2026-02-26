@@ -1,4 +1,4 @@
-# iperf, Copyright (c) 2014-2025, The Regents of the University of
+# iperf, Copyright (c) 2014-2026, The Regents of the University of
 # California, through Lawrence Berkeley National Laboratory (subject
 # to receipt of any required approvals from the U.S. Dept. of
 # Energy).  All rights reserved.
@@ -54,6 +54,18 @@ AC_PROG_LN_S
 # Add -Wall if we are using GCC.
 if test "x$GCC" = "xyes"; then
   CFLAGS="$CFLAGS -Wall"
+fi
+
+# Check for ldconfig
+AC_ARG_WITH([ldconfig], AS_HELP_STRING([--without-ldconfig], [do not run ldconfig]))
+
+if test "$with_ldconfig" != no; then
+  AC_CHECK_PROG([LDCONFIG], [ldconfig], [ldconfig], [false])
+  if test "$LDCONFIG" != false; then
+    AC_SUBST([LDCONFIG], [$LDCONFIG])
+  else
+    AC_MSG_WARN([ldconfig not found; library path not updated])
+  fi
 fi
 
 # Check if enable profiling
@@ -397,6 +409,20 @@ AC_COMPILE_IFELSE(
   iperf3_cv_header_udp_gro=no))
 if test "x$iperf3_cv_header_udp_gro" = "xyes"; then
     AC_DEFINE([HAVE_UDP_GRO], [1], [Have UDP_GRO sockopt.])
+fi
+
+# Check socket shutdown() with SHUT_WR
+AC_CACHE_CHECK([SHUT_WR socket shutdown option],
+[iperf3_cv_header_ip_shut_wr],
+AC_COMPILE_IFELSE(
+  [AC_LANG_PROGRAM([[#include <sys/types.h>
+                     #include <sys/socket.h>
+                     #include <netinet/in.h>]],
+                   [[int foo = SHUT_WR;]])],
+  iperf3_cv_header_ip_shut_wr=yes,
+  iperf3_cv_header_ip_shut_wr=no))
+if test "x$iperf3_cv_header_ip_shut_wr" = "xyes"; then
+    AC_DEFINE([HAVE_SOCKET_SHUTDOWN_SHUT_WR], [1], [Have SHUT_WR socket shutdown option.])
 fi
 
 # Check if we need -lrt for clock_gettime

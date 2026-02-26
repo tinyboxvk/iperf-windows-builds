@@ -88,7 +88,7 @@ iperf_server_worker_run(void *s) {
     }
 
     /* Allow this thread to be cancelled even if it's in a syscall */
-    pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+    pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL);
     pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
 
     while (! (test->done) && ! (sp->done)) {
@@ -230,7 +230,6 @@ iperf_accept(struct iperf_test *test)
     }
     return 0;
     error_handling:
-        close(s);
         return ret;
 }
 
@@ -440,6 +439,18 @@ static void
 cleanup_server(struct iperf_test *test)
 {
     struct iperf_stream *sp;
+    int32_t err;
+
+    /* Try to send the error code to the client*/
+    if (i_errno != IENONE && test->ctrl_sck != -1) {
+        if (iperf_set_send_state(test, SERVER_ERROR) == 0) {
+            err = htonl(i_errno);
+            if (Nwrite(test->ctrl_sck, (char*) &err, sizeof(err), Ptcp) >= 0) {
+                err = htonl(errno);
+                Nwrite(test->ctrl_sck, (char*) &err, sizeof(err), Ptcp);
+            }
+        }
+    }
 
     /* Cancel outstanding threads */
     int i_errno_save = i_errno;
@@ -483,7 +494,8 @@ cleanup_server(struct iperf_test *test)
 
     /* Close open test sockets */
     if (test->ctrl_sck > -1) {
-	close(test->ctrl_sck);
+        // Make sure all control messages (especially error messages) are received by the client before the socket is closed
+        iperf_sync_close_socket(test->ctrl_sck);
         test->ctrl_sck = -1;
     }
     if (test->listener > -1) {
