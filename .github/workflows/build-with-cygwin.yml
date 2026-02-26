@@ -30,7 +30,7 @@ jobs:
       run: make install
     - name: copy
       run: copy C:/cygwin/bin/cygwin1.dll C:/cygwin/usr/local/bin/
-    - uses: actions/upload-artifact@v6
+    - uses: actions/upload-artifact@v7
       with:
         name: iperf3
         path: |
